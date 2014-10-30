@@ -2,13 +2,21 @@
 
 flist_fname=.Clean-skip
 
-if [[ "$1" == "init" ]]; then
-  rm $flist_fname 2>/dev/null
-  for i in *; do
-    echo $i >>$flist_fname
-  done
-  exit 0
-fi
+print_help()
+{
+  echo "\
+usage: $0 COMMAND
+$0 helps to maintain your direcorty in clean state. Yout can remove garbage files from your directory with this script.
+
+COMMANDS:
+  init            Mark all files contained in the current directory to dont
+                  remove them.
+  add FILES...    Mark specified files to do not remove them.
+  list            Print all files in current directory. Files, wich will be
+                  deleted with command 'del', are marked with '+'.
+  del             Delete all files, not marked with command 'init'.
+"
+}
 
 contains()
 {
@@ -19,23 +27,53 @@ contains()
   false
 }
 
-IFS=$'\r\n'
-flist=(`cat $flist_fname`)
+load_flist(){
+  IFS=$'\r\n'
+  flist=(`cat $flist_fname`)
+}
 
-if [[ "$1" == "list" ]]; then
+case $1 in
+"init")
+  rm $flist_fname 2>/dev/null
+  for i in *; do
+    echo $i >>$flist_fname
+  done
+  exit 0
+  ;;
+
+"add")
+  shift
+  load_flist
+  for i in $@; do
+    contains $i || flist+=("$i")
+  done
+
+  flist=(`sort <(for j in ${flist[@]}; do echo $j; done)`)
+  echo >$flist_fname
+  for i in ${flist[@]}; do echo $i >>$flist_fname; done
+  ;;
+
+"list")
+  load_flist
   for i in *; do
     prefix=" "
     contains $i || prefix="+"
     echo ${prefix}$i
   done
-fi
+  ;;
 
-if [[ "$1" == "del" ]]; then
+"del")
+  load_flist
   for i in *; do
     if ! contains $i; then
       #rm -r $i
       echo -$i
     fi
   done
-fi
+  ;;
+
+*)
+  print_help
+  ;;
+esac
 
