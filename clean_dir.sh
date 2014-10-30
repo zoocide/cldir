@@ -49,7 +49,7 @@ case $1 in
   done
 
   flist=(`sort <(for j in ${flist[@]}; do echo $j; done)`)
-  echo >$flist_fname
+  echo -n >$flist_fname
   for i in ${flist[@]}; do echo $i >>$flist_fname; done
   ;;
 
