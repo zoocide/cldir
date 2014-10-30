@@ -29,7 +29,7 @@ contains()
 
 load_flist(){
   IFS=$'\r\n'
-  flist=(`cat $flist_fname`)
+  flist=(`cat $flist_fname 2>/dev/null`)
 }
 
 case $1 in
