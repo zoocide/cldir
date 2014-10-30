@@ -66,7 +66,7 @@ case $1 in
   load_flist
   for i in *; do
     if ! contains $i; then
-      #rm -r $i
+      rm -r $i
       echo -$i
     fi
   done
