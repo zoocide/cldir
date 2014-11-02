@@ -4,9 +4,10 @@ flist_fname=.Clean-skip
 
 print_help()
 {
+  script_name=${0##*/}
   echo "\
-usage: $0 COMMAND
-$0 helps to maintain your direcorty in clean state. Yout can remove garbage files from your directory with this script.
+usage: $script_name COMMAND
+$script_name helps to maintain your direcorty in clean state. You can remove garbage files from your directory with this script.
 
 COMMANDS:
   init            Mark all files contained in the current directory to dont
