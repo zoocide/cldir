@@ -13,8 +13,9 @@ COMMANDS:
   init            Mark all files contained in the current directory to dont
                   remove them.
   add FILES...    Mark specified files to do not remove them.
-  list            Print all files in current directory. Files, wich will be
+  list [-a]       Print new files in current directory. Files, wich will be
                   deleted with command 'del', are marked with '+'.
+		  To see all files in current directory use key '-a'.
   del             Delete all files, not marked with command 'init'.
 "
 }
@@ -32,6 +33,7 @@ load_flist(){
   IFS=$'\r\n'
   flist=(`cat $flist_fname 2>/dev/null`)
 }
+
 
 case $1 in
 "init")
@@ -55,11 +57,24 @@ case $1 in
   ;;
 
 "list")
+  list_all=0
+  shift
+  OPTIND=0
+  while getopts 'a' opt; do
+    case $opt in
+    a) list_all=1 ;;
+    ?) print_help; exit 1 ;;
+    esac
+  done
+  shift $((OPTIND-1))
+
   load_flist
   for i in *; do
-    prefix=" "
-    contains $i || prefix="+"
-    echo ${prefix}$i
+    if ! contains $i; then
+      echo "+$i"
+    elif [ "$list_all" != 0 ]; then
+      echo " $i"
+    fi
   done
   ;;
 
